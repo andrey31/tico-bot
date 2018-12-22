@@ -9,7 +9,3 @@ add . /bot
 RUN pip install -r requeriments.txt
 
 CMD python main.py
-
-
-
-
