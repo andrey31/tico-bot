@@ -48,14 +48,14 @@ def welcome(bot, update):
     if(count_users == 1):
         message_welcome = '¡Bienvenido/a, '
         dict_user = list_users[0]
-        users = dict_user['username']
+        users = dict_user['first_name']
     else:
         message_welcome = '¡Bienvenidos/as, '
 
         for user in list_users:
             users += user['first_name'] + ', '
 
-    msg = f'{message_welcome} {users} a "{chat_name}"'\
+    msg = f'{message_welcome} {users} a "{chat_name}" '\
         'por favor  visite las reglas  del grupo '\
         f'y los demás canales que puedan ser de su agrado.\n'\
         f'La hora en Costa Rica es: {time_cr}\n' \
