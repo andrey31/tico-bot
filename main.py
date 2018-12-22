@@ -12,7 +12,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Bot token in environment variable
-TOKEN = environ['botprueba']
+TOKEN = environ['TOKEN']
 
 
 def start_or_help(bot, update):
