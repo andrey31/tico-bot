@@ -24,6 +24,15 @@ solo en este grupo @grupotelegramcostarica\
         """)
 
 
+def get_id(bot, update):
+    ''' Send a message with group id / user id '''
+    chat_id = update.message.chat_id
+    user_id = update.message.from_user.id
+    response = f'El id del grupo es: {chat_id}.\nTu id es: {user_id}'
+
+    update.message.reply_text(response)
+
+
 def welcome(bot, update):
     """Send the welcome message"""
 
@@ -79,6 +88,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start_or_help))
     dp.add_handler(CommandHandler("help", start_or_help))
+    dp.add_handler(CommandHandler("getid", get_id))
     dp.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))
 
