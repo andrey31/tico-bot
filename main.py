@@ -86,8 +86,7 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start_or_help))
-    dp.add_handler(CommandHandler("help", start_or_help))
+    dp.add_handler(CommandHandler(["start", "help"], start_or_help))
     dp.add_handler(CommandHandler("getid", get_id))
     dp.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))
