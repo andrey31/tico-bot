@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 # Bot token in environment variable
 TOKEN = environ['TOKEN']
+GROUP_ID = environ['GROUP_ID']
+ADMINS = environ['ADMINS']
 
 
 def start_or_help(bot, update):
@@ -35,42 +37,43 @@ def get_id(bot, update):
 
 def welcome(bot, update):
     """Send the welcome message"""
-
-    # telegraph with rules/channels
-    telegraph = 'http://telegra.ph/Bienvenida-05-30'
-
-    # convert time server to time Costa Rica
-    time_cr = time.time() - (60*(60*6))
-
-    # time Costa Rica format
-    time_cr = time.strftime("%I:%M %p", time.localtime(time_cr))
-
     chat_id = update.message.chat_id
-    chat_name = update.message.chat.title
 
-    list_users = update.message.new_chat_members
-    count_users = len(list_users)
+    if chat_id == int(GROUP_ID):
+        # telegraph with rules/channels
+        telegraph = 'http://telegra.ph/Bienvenida-05-30'
 
-    message_welcome = ''
-    users = ''
+        # convert time server to time Costa Rica
+        time_cr = time.time() - (60*(60*6))
 
-    if(count_users == 1):
-        message_welcome = '¡Bienvenido/a, '
-        dict_user = list_users[0]
-        users = dict_user['first_name']
-    else:
-        message_welcome = '¡Bienvenidos/as, '
+        # time Costa Rica format
+        time_cr = time.strftime("%I:%M %p", time.localtime(time_cr))
 
-        for user in list_users:
-            users += user['first_name'] + ', '
+        chat_name = update.message.chat.title
 
-    msg = f'{message_welcome} {users} a "{chat_name}" '\
-        'por favor  visite las reglas  del grupo '\
-        f'y los demás canales que puedan ser de su agrado.\n'\
-        f'La hora en Costa Rica es: {time_cr}\n' \
-        f'{telegraph}'
+        list_users = update.message.new_chat_members
+        count_users = len(list_users)
 
-    bot.send_message(chat_id=chat_id, text=msg)
+        message_welcome = ''
+        users = ''
+
+        if(count_users == 1):
+            message_welcome = '¡Bienvenido/a, '
+            dict_user = list_users[0]
+            users = dict_user['first_name']
+        else:
+            message_welcome = '¡Bienvenidos/as, '
+
+            for user in list_users:
+                users += user['first_name'] + ', '
+
+        msg = f'{message_welcome} {users} a "{chat_name}" '\
+              'por favor  visite las reglas  del grupo '\
+              f'y los demás canales que puedan ser de su agrado.\n'\
+              f'La hora en Costa Rica es: {time_cr}\n' \
+              f'{telegraph}'
+
+        bot.send_message(chat_id=chat_id, text=msg)
 
 
 def error(bot, update, error):
