@@ -1,16 +1,77 @@
 from os import environ
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 from peewee import fn
 
 from models.tables import User, Message
 
 GROUP_ID = int(environ['GROUP_ID'])
+ADMINS = environ['ADMINS']
 
 
-def msg_daily(bot, update):
+def is_admin(update):
+    user_id = str(update.message.from_user.id)
 
-    chat_id = update.message.chat_id
+    listAdmins = ADMINS.split(',')
+    admin = False
+    for i in listAdmins:
+        print(i, ' ', user_id)
+        if i == user_id:
+            admin = True
+            break
+    return admin
+
+
+def add_counter_daily(bot, update, args, job_queue, chat_data):
+    ''' Add send messages daily with messages counter'''
+
+    if is_admin(update):
+        chat_id = update.message.chat_id
+
+        try:
+            # due = int(args[0])
+            the_time = args[0].split(':')
+            hour = int(the_time[0])
+            minute = int(the_time[1])
+            second = int(the_time[2])
+            due = time(hour=hour+6, minute=minute, second=second)
+            job = job_queue.run_daily(msg_daily, due, context=chat_id)
+
+            chat_data['counter'] = job
+
+            msg = f'Envio de contador de mensajes diario '\
+                'activado con éxito.\n'\
+                f'Se enviará a las\n'\
+                f'Horas: {hour}\n'\
+                f'Minutos: {minute}\n'\
+                f'Segundos: {second}'
+
+            update.message.reply_text(msg)
+
+        except (IndexError, ValueError):
+            update.message.reply_text('Use el siguiente formato:\n'
+                                      '/set 19:00:00')
+
+    else:
+        update.message.reply_text('Opción sólo para admins')
+
+
+def remove_counter_daily(bot, update, chat_data):
+    ''' Remove message counter sending '''
+    if is_admin(update):
+
+        if 'counter' not in chat_data:
+            update.message.reply_text('Contador diario no activado')
+            return
+        job = chat_data['counter']
+        job.schedule_removal()
+        del chat_data['counter']
+        update.message.reply_text('Contador diario desactivado!')
+
+
+def msg_daily(bot, job):
+
+    # chat_id = update.message.chat_id
 
     today = datetime.today() - timedelta(hours=6)
     yesterday = today - timedelta(days=1)
@@ -34,7 +95,7 @@ def msg_daily(bot, update):
                 f' └enviados: {i.num_messages}\n'
         count += 1
 
-    bot.send_message(chat_id=chat_id, text=msg+tops)
+    bot.send_message(job.context, text=msg+tops)
 
 
 def counter(bot, update):

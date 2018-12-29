@@ -1,10 +1,11 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from os import environ
 import logging
 import time
 
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
 from models.tables import create_tables
-from counter import counter
+from counter import counter, add_counter_daily, remove_counter_daily
 
 
 # Enable logging
@@ -97,6 +98,12 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler(["start", "help"], start_or_help))
     dp.add_handler(CommandHandler("getid", get_id))
+    dp.add_handler(CommandHandler("set", add_counter_daily,
+                                  pass_args=True,
+                                  pass_job_queue=True,
+                                  pass_chat_data=True))
+    dp.add_handler(CommandHandler("unset", remove_counter_daily,
+                                  pass_chat_data=True))
     dp.add_handler(MessageHandler(Filters.all, counter))
     dp.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))
