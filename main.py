@@ -3,6 +3,9 @@ from os import environ
 import logging
 import time
 
+from models.tables import create_tables
+from counter import counter
+
 
 # Enable logging
 logging.basicConfig(
@@ -83,6 +86,9 @@ def error(bot, update, error):
 
 def main():
     """Run bot."""
+
+    create_tables()
+
     updater = Updater(TOKEN)
 
     # Get the dispatcher to register handlers
@@ -91,6 +97,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler(["start", "help"], start_or_help))
     dp.add_handler(CommandHandler("getid", get_id))
+    dp.add_handler(MessageHandler(Filters.all, counter))
     dp.add_handler(MessageHandler(
         Filters.status_update.new_chat_members, welcome))
 
