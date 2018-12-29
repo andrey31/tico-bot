@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    container_name: db-ticobot
+    image: mariadb:10.3
+    ports:
+      - "3307:3306"
+    volumes:
+      - $PWD/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $PASS_DB
+      MYSQL_USER: ticobot
+      MYSQL_PASSWORD: $PASS_DB_TICOBOT
+      MYSQL_DATABASE: ticobot
+    networks:
+      - net-telegram
+  bot:
+    container_name: ticobot
+    build: .
+    command: python main.py
+    environment:
+      TOKEN: $TOKEN
+      GROUP_ID: $GROUP_ID
+      ADMINS: $ADMINS
+      PASS_DB_TICOBOT: $PASS_DB_TICOBOT
+    volumes:
+      - .:/bot
+    depends_on:
+      - db
+    networks:
+      - net-telegram
+
+networks:
+  net-telegram:
