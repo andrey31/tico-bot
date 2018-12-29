@@ -24,8 +24,9 @@ def is_admin(update):
 
 def add_counter_daily(bot, update, args, job_queue, chat_data):
     ''' Add send messages daily with messages counter'''
+    chat_id = update.message.chat_id
 
-    if is_admin(update):
+    if is_admin(update) and (chat_id == GROUP_ID):
         chat_id = update.message.chat_id
 
         try:
@@ -58,7 +59,9 @@ def add_counter_daily(bot, update, args, job_queue, chat_data):
 
 def remove_counter_daily(bot, update, chat_data):
     ''' Remove message counter sending '''
-    if is_admin(update):
+    chat_id = update.message.chat_id
+
+    if is_admin(update) and (chat_id == GROUP_ID):
 
         if 'counter' not in chat_data:
             update.message.reply_text('Contador diario no activado')
