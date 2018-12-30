@@ -31,11 +31,19 @@ def add_counter_daily(bot, update, args, job_queue, chat_data):
 
         try:
             # due = int(args[0])
+
             the_time = args[0].split(':')
+
             hour = int(the_time[0])
             minute = int(the_time[1])
             second = int(the_time[2])
-            due = time(hour=hour+6, minute=minute, second=second)
+
+            today = datetime.now()
+            dt = datetime(today.year, today.month, today.day,
+                          hour, minute, second)
+            hour_server = dt + timedelta(hours=6)
+
+            due = time(hour=hour_server.hour, minute=minute, second=second)
             job = job_queue.run_daily(msg_daily, due, context=chat_id)
 
             chat_data['counter'] = job
