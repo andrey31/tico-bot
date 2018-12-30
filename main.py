@@ -4,7 +4,7 @@ import time
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-from models.tables import create_tables
+from models.tables import Connection
 from counter import counter, add_counter_daily, remove_counter_daily
 
 
@@ -88,7 +88,9 @@ def error(bot, update, error):
 def main():
     """Run bot."""
 
-    create_tables()
+    Connection.db_connect()
+    Connection.create_tables
+    Connection.db_close()
 
     updater = Updater(TOKEN)
 

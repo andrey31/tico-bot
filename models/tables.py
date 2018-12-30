@@ -23,7 +23,7 @@ class User(BaseModel):
     id_user = IntegerField()
     username = CharField()
     first_name = CharField()
-    last_name = CharField()
+    last_name = CharField(null=True)
 
 
 class Message(BaseModel):
@@ -33,6 +33,15 @@ class Message(BaseModel):
     date = DateTimeField()
 
 
-def create_tables():
-    with db:
-        db.create_tables([User, Message])
+class Connection():
+
+    def create_tables():
+        with db:
+            db.create_tables([User, Message])
+
+    def db_connect():
+        db.connect()
+
+    def db_close():
+        if not db.is_closed():
+            db.close()

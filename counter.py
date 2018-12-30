@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, time
 
 from peewee import fn
 
-from models.tables import User, Message
+from models.tables import Connection, User, Message
 
 GROUP_ID = int(environ['GROUP_ID'])
 ADMINS = environ['ADMINS']
@@ -87,6 +87,8 @@ def msg_daily(bot, job):
     today = datetime.today() - timedelta(hours=6)
     yesterday = today - timedelta(days=1)
 
+    Connection.db_connect()
+
     total_daily = Message.select().where(Message.date > yesterday,
                                          Message.date < today)
     msg = 'Reporte últimas 24hrs\n\n'\
@@ -107,7 +109,7 @@ def msg_daily(bot, job):
         count += 1
 
     bot.send_message(job.context, text=msg+tops)
-
+    Connection.db_close()
 
 def counter(bot, update):
     chat_id = update.message.chat_id
@@ -120,6 +122,7 @@ def counter(bot, update):
         first_name = message.from_user.first_name
         last_name = message.from_user.last_name
 
+        Connection.db_connect()
         user = User.select().where(User.id_user == user_id)
 
         if not user.exists():
@@ -139,6 +142,7 @@ def counter(bot, update):
         else:
 
             # datos actualizados
+
             user = user.get()
             user.username = username
             user.first_name = first_name
@@ -149,3 +153,5 @@ def counter(bot, update):
                 user=user,
                 date=datetime.now() - timedelta(hours=6)
             )
+
+        Connection.db_close()
